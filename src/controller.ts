@@ -4,7 +4,7 @@ import * as basex from 'basex';
 export class XQueryKernel {
 	private readonly _id = 'quodatum-notebook-serializer-kernel';
 	private readonly _label = 'XQuery Notebook Kernel';
-	private readonly _supportedLanguages = ['javascript', 'xquery'];
+	private readonly _supportedLanguages = [ 'xquery','javascript'];
 
 	private _executionOrder = 0;
 	private readonly _controller: vscode.NotebookController;

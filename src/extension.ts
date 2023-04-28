@@ -6,8 +6,8 @@ const NOTEBOOK_TYPE = 'quodatum-notebook-serializer';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('quodatum-notebook-serializer.createXQNotebook', async () => {
-		const language = 'javascript';
-		const defaultValue = `{ 1+1 }`;
+		const language = 'xquery';
+		const defaultValue = ` fn:current-current-dateTime() `;
 		const cell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, defaultValue, language);
 		const data = new vscode.NotebookData([cell]);
 		data.metadata = {
