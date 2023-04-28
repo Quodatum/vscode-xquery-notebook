@@ -1,0 +1,71 @@
+{
+  "name": "xquery-notebook",
+  "displayName": "XQuery notebook",
+  "version": "0.0.7",
+  "description": "Notebook supporting XQuery cells. The XQuery cells are evaluated using a BaseX server. ",
+  "preview": true,
+  "publisher": "quodatum",
+  "author": "Andy Bunce (https://github.com/Quodatum)",
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#FFFFFF",
+    "theme": "light"
+  },
+  "icon": "icon.png",
+  "homepage": "https://github.com/Quodatum/xquery-notebook",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Quodatum/xquery-notebook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Quodatum/xquery-notebook/issues"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onNotebook:quodatum-notebook-serializer"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "quodatum-notebook-serializer.createXQNotebook",
+        "title": "Create XQuery Notebook"
+      }
+    ],
+    "notebooks": [
+      {
+        "type": "quodatum-notebook-serializer",
+        "displayName": "XQuery Notebook",
+        "selector": [
+          {
+            "filenamePattern": "*.xq-notebook"
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -b",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -b --watch"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.2.2",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "^7.27.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "basex": "^1.0.1"
+  }
+}
