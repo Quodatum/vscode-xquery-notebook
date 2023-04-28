@@ -1,1 +1,1 @@
-{"cells":[{"kind":2,"language":"xquery","value":" fn:current-current-dateTime() "}]}
+{"cells":[{"kind":2,"language":"xquery","value":" 1+3"}]}

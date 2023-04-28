@@ -4,9 +4,10 @@ An experimental XQuery [notebook for VSCode](https://code.visualstudio.com/blogs
 
 ## Requirements
 
-Currently. 
+Currently hardcoded for: 
 * A Basex API server, running on `localhost:1984`
 * with an account `admin` with password `admin` 
+## Usage
 
 ## Notes
 
