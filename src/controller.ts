@@ -1,17 +1,18 @@
 import * as vscode from 'vscode';
 import * as basex from 'basex';
 import util = require('util');
+import  * as cellprovider from './languages/cellprovider';
+
+
 
 export class XQueryKernel {
     private readonly _id = 'quodatum-notebook-serializer-kernel';
     private readonly _label = 'XQuery Notebook Kernel';
-    private readonly _supportedLanguages = [ 'xquery','javascript'];
+    private readonly _supportedLanguages =cellprovider.languages();
 
     private _executionOrder = 0;
     private readonly _controller: vscode.NotebookController;
-    private basexConnected = false;
-    private client: any;
-
+   
     constructor() {
 
         this._controller = vscode.notebooks.createNotebookController(this._id,
@@ -36,35 +37,26 @@ export class XQueryKernel {
     private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         const lang = cell.document.languageId;
-        if (lang == "xquery" && !this.basexConnected) {
-            this.basexConnected = true;
-            this.client = new basex.Session("localhost", 1984, "admin", "admin");
-        }
+        const provider=cellprovider.getProvider(lang);
+       
         execution.executionOrder = ++this._executionOrder;
         execution.start(Date.now());
 
         try {
             const code = cell.document.getText();
-            const result = await (this as any)[lang](code);
-            execution.replaceOutput([new vscode.NotebookCellOutput([
+            const result = await provider.eval(code);
+               execution.replaceOutput([new vscode.NotebookCellOutput([
                 vscode.NotebookCellOutputItem.json(result)
             ])]);
 
             execution.end(true, Date.now());
         } catch (err) {
             execution.replaceOutput([new vscode.NotebookCellOutput([
-                vscode.NotebookCellOutputItem.error(err as Error)
+                vscode.NotebookCellOutputItem.json(err)
             ])]);
             execution.end(false, Date.now());
         }
     }
-    private javascript(code: string): string {
-        return eval?.(`"use strict";(${code})`);
-    }
-    private async xquery(code: string): Promise<any> {
-        const q=this.client.query(code);
-        const results = util.promisify(q.results);
-        return results();
 
-    }
+  
 }
