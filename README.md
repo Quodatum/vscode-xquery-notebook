@@ -2,6 +2,7 @@
 
 An experimental XQuery [notebook for VSCode](https://code.visualstudio.com/blogs/2021/11/08/custom-notebooks).
 
+![image](docs/notepad.png)
 ## Requirements
 
 Currently hardcoded for: 

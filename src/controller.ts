@@ -50,7 +50,7 @@ export class XQueryKernel {
             ])]);
 
             execution.end(true, Date.now());
-        } catch (err) {
+        } catch (err:any) {
             execution.replaceOutput([new vscode.NotebookCellOutput([
                 vscode.NotebookCellOutputItem.json(err)
             ])]);

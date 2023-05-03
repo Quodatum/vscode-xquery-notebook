@@ -15,6 +15,7 @@ interface RawNotebookCell {
 	value: string;
 	kind: vscode.NotebookCellKind;
 	editable?: boolean;
+	outputs?:string[];
 }
 
 export class SampleContentSerializer implements vscode.NotebookSerializer {
@@ -46,11 +47,12 @@ export class SampleContentSerializer implements vscode.NotebookSerializer {
 		const contents: RawNotebookData = { cells: [] };
 
 		for (const cell of data.cells) {
-			contents.cells.push({
+			const item:RawNotebookCell={
 				kind: cell.kind,
 				language: cell.languageId,
-				value: cell.value
-			});
+				value: cell.value};
+			if(cell.outputs?.length) console.log("AA");
+			contents.cells.push(item);
 		}
 
 		return new TextEncoder().encode(JSON.stringify(contents));

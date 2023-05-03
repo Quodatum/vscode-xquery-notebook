@@ -1,12 +1,14 @@
-import {CellProvider}  from './cellprovider';
+import { CellProvider } from './cellprovider';
 
 export class JavascriptCell implements CellProvider {
-   
+
     async eval(code: string): Promise<any> {
-        try {
-            return  eval?.(`"use strict";(${code})`);
-        } catch (err :any) {
-            return err;
-        } 
-    }
+        return new Promise((resolve, reject) => {
+            try {
+                resolve(eval?.(`"use strict";(${code})`));
+            } catch (err :any) {
+                reject({'message': err.message});
+            }
+        });
+}
 }
