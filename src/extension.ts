@@ -1,32 +1,19 @@
 import * as vscode from 'vscode';
 import { XQueryKernel } from './controller';
-import { SampleContentSerializer } from './serializer';
+import { XQueryContentSerializer } from './serializer';
+import * as commands from'./commands';
+import * as statusbar from './statusbar';
 
-const NOTEBOOK_TYPE = 'quodatum-notebook-serializer';
+import {NOTEBOOK_TYPE} from './constants';
+
 
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('quodatum-notebook-serializer.createXQNotebook', async () => {
-		const language = 'xquery';
-		const defaultValue = ` db:system() `;
-		const cell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, defaultValue, language);
-		const data = new vscode.NotebookData([cell]);
-		data.metadata = {
-			custom: {
-				cells: [],
-				metadata: {
-					orig_nbformat: 4
-				},
-				nbformat: 4,
-				nbformat_minor: 2
-			}
-		};
-		const doc = await vscode.workspace.openNotebookDocument(NOTEBOOK_TYPE, data);
-		await vscode.window.showNotebookDocument(doc);
-	}));
-
+	commands.activate(context);
+    statusbar.activate(context);
+	
 	context.subscriptions.push(
 		vscode.workspace.registerNotebookSerializer(
-			NOTEBOOK_TYPE, new SampleContentSerializer(), { transientOutputs: true }
+			NOTEBOOK_TYPE, new XQueryContentSerializer(), { transientOutputs: true }
 		),
 		new XQueryKernel()
 	);

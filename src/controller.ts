@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
-import * as basex from 'basex';
-
 import * as cellprovider from './languages/cellprovider';
+import { prologCell } from './common';
 
 function output(execution: vscode.NotebookCellExecution, items: any[]) {
     execution.replaceOutput([new vscode.NotebookCellOutput(items)]);
@@ -9,7 +8,7 @@ function output(execution: vscode.NotebookCellExecution, items: any[]) {
 
 
 export class XQueryKernel {
-    private readonly _id = 'quodatum-notebook-serializer-kernel';
+    private readonly _id = 'quobook-kernel';
     private readonly _label = 'XQuery Notebook Kernel';
     private readonly _supportedLanguages = cellprovider.languages();
 
@@ -19,7 +18,7 @@ export class XQueryKernel {
     constructor() {
 
         this._controller = vscode.notebooks.createNotebookController(this._id,
-            'quodatum-notebook-serializer',
+            'quobook',
             this._label);
 
         this._controller.supportedLanguages = this._supportedLanguages;
@@ -46,24 +45,11 @@ export class XQueryKernel {
         execution.start(Date.now());
 
         try {
-            const code = cell.document.getText();
-            const first = cell.notebook.getCells()[0];
-           /*  if (cell.index !== first.index) {
-                // prepend 1st
-                code = first.document.getText() + code ;
-            } */
-            const result :string[] = await provider.eval(code);
+            const code =getCode(cell);
+            const result: string[] = await provider.eval(code);
             // eslint-disable-next-line prefer-const
-            let text=`<style>
-            .s1 {
-                background-color: antiquewhite;
-                margin-bottom: 20px; 
-              }
-                      </style>
-            <div><h4>${ result.length } items</h4>`;
-            result.forEach(r=>{text+=formatResult(r);});
-            text+="</div>";
-           /*  result.forEach(element => { text+=element; }); */
+            let text = asHtml(result);
+            /*  result.forEach(element => { text+=element; }); */
             output(execution, [
                 vscode.NotebookCellOutputItem.text(text, 'text/html'),
                 vscode.NotebookCellOutputItem.json(result)]);
@@ -74,13 +60,31 @@ export class XQueryKernel {
             execution.end(false, Date.now());
         }
     }
-    
+
 
 }
-function formatResult(item: string ):string{
-    return `<div class="s1">${ htmlEntities(item) }</div>`;
+
+function getCode(cell: vscode.NotebookCell): string {
+
+    const code = prologCell(cell)+ cell.document.getText();
+
+    return code;
 }
 
-function htmlEntities(str:string):string {
+function formatResult(item: string): string {
+    return `<div class="s1">${htmlEntities(item)}</div>`;
+}
+
+function htmlEntities(str: string): string {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function asHtml(result: string[]): string {
+    let text = `<style>.s1 {
+                background-color: seashell;
+                margin-bottom: 8px; 
+              }</style>
+        <div><h4>${result.length} ${result.length === 1 ? ' Result' : 'Results'}</h4>`;
+    result.forEach(r => { text += formatResult(r); });
+    text += "</div>";
+    return text;
 }

@@ -1,8 +1,8 @@
 {
-  "name": "xquery-notebook",
-  "displayName": "XQuery notebook",
-  "version": "0.0.17",
-  "description": "Notebook supporting XQuery cells. The XQuery cells are evaluated using a BaseX server. ",
+  "name": "quobook",
+  "displayName": "Quodatum: XQuery notebooks",
+  "version": "0.1.1",
+  "description": "Notebook supporting XQuery cells. The XQuery cells are evaluated via a socket connection to a BaseX server.",
   "preview": true,
   "publisher": "quodatum",
   "author": "Andy Bunce (https://github.com/Quodatum)",
@@ -27,19 +27,78 @@
     "Other"
   ],
   "activationEvents": [
-    "onNotebook:quodatum-notebook-serializer"
+    "onNotebook:quobook"
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
+    "configuration": [
       {
-        "command": "quodatum-notebook-serializer.createXQNotebook",
-        "title": "Create XQuery Notebook"
+        "id": "server",
+        "title": "Quodatum: XQuery notebooks",
+        "order": 1,
+        "properties": {
+          "quobook.server.host": {
+            "type": "string",
+            "order": 1,
+            "description": "Hostname or ip address",
+            "additionalProperties": false,
+            "default": "localhost"
+          },
+          "quobook.server.port": {
+            "type": "integer",
+            "order": 2,
+            "description": "socket Port.",
+            "additionalProperties": false,
+            "default": 1984
+          },
+          "quobook.server.user": {
+            "type": "string",
+            "order": 3,
+            "description": "User name",
+            "additionalProperties": false,
+            "default": "admin"
+          },
+          "quobook.server.password": {
+            "type": "string",
+            "order": 4,
+            "description": "User password. ** Warning ** stored in plain text.",
+            "additionalProperties": false,
+            "default": "admin"
+          },
+          "quobook.connections": {
+            "type": "array",
+            "description": "saved connections."
+          }
+        }
       }
     ],
+    "commands": [
+      {
+        "command": "quobook.newXQNotebook",
+        "title": "quoBook: Create XQuery Notebook",
+        "shortTitle": "XQuery Notebook"
+      },
+      {
+        "command": "quobook.connectionSave",
+        "title": "quoBook: Save connection with name",
+        "shortTitle": "server save"
+      },
+      {
+        "command": "quobook.connectionLoad",
+        "title": "quoBook: Load connection configuration",
+        "shortTitle": "server load"
+      }
+    ],
+    "menus": {
+      "file/newFile": [
+        {
+          "command": "quobook.newXQNotebook"
+        }
+      ]
+    },
     "notebooks": [
       {
-        "type": "quodatum-notebook-serializer",
+        "type": "quobook",
         "displayName": "XQuery Notebook",
         "selector": [
           {
@@ -59,13 +118,13 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "14.x",
     "@types/vscode": "^1.74.0",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
     "eslint": "^7.27.0",
     "mocha": "^10.2.0",
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "basex": "^1.0.1"
+    "@quodatum/basex": "^1.1.2"
   }
 }

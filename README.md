@@ -5,10 +5,14 @@ An experimental XQuery [notebook for VSCode](https://code.visualstudio.com/blogs
 ![image](docs/notepad.png)
 ## Requirements
 
-Currently hardcoded for: 
-* A Basex API server, running on `localhost:1984`
-* with an account `admin` with password `admin` 
+Requires access to a running BaseX server. The connection uses the Client API.
+Settings    
 ## Usage
+### create a notebook
+### add XQuery cells
+Adding a code cell defaults to type `xquery`. `Javascript` cells are also supported.
+### prolog cells
+Before executing a XQuery cell, preceding XQuery cells are examined for content starting with '(:<:)' The first such cell, if any, found searching towards the first cell is prefixed to the current cell before execution.
 
 ## Notes
 

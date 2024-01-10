@@ -1,5 +1,4 @@
-import * as basex from 'basex';
-import util = require('util');
+
 import { XQueryCell } from './xquery-cell';
 import { JavascriptCell } from './javascript-cell';
 
