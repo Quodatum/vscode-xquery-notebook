@@ -1,0 +1,1 @@
+{"cells":[{"kind":2,"language":"xquery","value":"let $cells:=json:doc(\"C:\\Users\\mrwhe\\git\\quodatum\\xquery-notebook\\samples\\test.xq-notebook\",\r\nmap{\"format\":\"xquery\"})?cells=>array:flatten()\r\n\r\nreturn $cells[?language=\"xquery\"]"},{"kind":2,"language":"xquery","value":""}]}

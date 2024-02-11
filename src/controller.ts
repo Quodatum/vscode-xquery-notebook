@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as cellprovider from './languages/cellprovider';
-import { prologCell } from './common';
+import { findHeader } from './common';
 
 function output(execution: vscode.NotebookCellExecution, items: any[]) {
     execution.replaceOutput([new vscode.NotebookCellOutput(items)]);
@@ -45,14 +45,15 @@ export class XQueryKernel {
         execution.start(Date.now());
 
         try {
-            const code =getCode(cell);
+            const code = getCode(cell);
             const result: string[] = await provider.eval(code);
             // eslint-disable-next-line prefer-const
             let text = asHtml(result);
             /*  result.forEach(element => { text+=element; }); */
             output(execution, [
-                vscode.NotebookCellOutputItem.text(text, 'text/html'),
-                vscode.NotebookCellOutputItem.json(result)]);
+                vscode.NotebookCellOutputItem.json(result)
+                , vscode.NotebookCellOutputItem.text(text, 'text/html')
+            ]);
 
             execution.end(true, Date.now());
         } catch (err: any) {
@@ -65,10 +66,17 @@ export class XQueryKernel {
 }
 
 function getCode(cell: vscode.NotebookCell): string {
+    const base = `declare base-uri "${cell.document.fileName}";`;
+    const cellText = cell.document.getText();
+    const header = findHeader(cell);
+    if (header) {
+        const hasBase = header.includes('declare base-uri ');
+        return (hasBase ? "" : base) + header + cellText;
+    } else {
+        const hasBase = cellText.includes('declare base-uri ');
+        return (hasBase ? "" : base) + cellText; + cellText;
+    }
 
-    const code = prologCell(cell)+ cell.document.getText();
-
-    return code;
 }
 
 function formatResult(item: string): string {

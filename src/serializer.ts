@@ -19,7 +19,7 @@ interface RawNotebookCell {
 }
 
 export class XQueryContentSerializer implements vscode.NotebookSerializer {
-	public readonly label: string = 'My Sample Content Serializer';
+	public readonly label: string = 'XQuery Content Serializer @todo';
 
 	public async deserializeNotebook(data: Uint8Array, token: vscode.CancellationToken): Promise<vscode.NotebookData> {
 		const contents = new TextDecoder().decode(data); // convert to String

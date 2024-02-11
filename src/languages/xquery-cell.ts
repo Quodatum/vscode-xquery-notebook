@@ -6,6 +6,7 @@ import { Configuration } from '../common';
 export class XQueryCell implements CellProvider {
     private connected = false;
     private session: basex.Session | undefined;
+   
     async eval(code: string): Promise<any> {
         return new Promise((resolve, reject) => {
 

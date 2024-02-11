@@ -11,8 +11,9 @@ Settings
 ### create a notebook
 ### add XQuery cells
 Adding a code cell defaults to type `xquery`. `Javascript` cells are also supported.
-### prolog cells
+### header cells
 Before executing a XQuery cell, preceding XQuery cells are examined for content starting with '(:<:)' The first such cell, if any, found searching towards the first cell is prefixed to the current cell before execution.
+If no `declare base-uri` is present in the header then the notebook url is prepended to the code.
 
 ## Notes
 

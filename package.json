@@ -1,7 +1,7 @@
 {
   "name": "quobook",
-  "displayName": "Quodatum: XQuery notebooks",
-  "version": "0.1.1",
+  "displayName": "Quodatum: XQuery notebooks for BaseX",
+  "version": "0.1.3",
   "description": "Notebook supporting XQuery cells. The XQuery cells are evaluated via a socket connection to a BaseX server.",
   "preview": true,
   "publisher": "quodatum",
@@ -101,6 +101,9 @@
         "type": "quobook",
         "displayName": "XQuery Notebook",
         "selector": [
+          {
+            "filenamePattern": "*.xqbk"
+          },
           {
             "filenamePattern": "*.xq-notebook"
           }

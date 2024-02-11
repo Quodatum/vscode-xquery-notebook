@@ -49,6 +49,6 @@ export class Configuration {
          workspace.getConfiguration(ExtensionTopLevelSection).update(section,value);
     }
     static get summary():string{
-        return `${Configuration.hostname}:${Configuration.port}@${Configuration.user}`;
+        return `${Configuration.user}@${Configuration.hostname}:${Configuration.port}`;
     }
 }
