@@ -9,13 +9,11 @@ Requires access to a running BaseX server. The connection uses the Client API.
 Settings    
 ## Usage
 ### create a notebook
+* file>new file>xquery notebook
+* cmd `quobook new`
+* Explorer new file. Extension `.xqbk` (prefered), or `.xq-notebook`
 ### add XQuery cells
 Adding a code cell defaults to type `xquery`. `Javascript` cells are also supported.
-### header cells
+### Header cells
 Before executing a XQuery cell, preceding XQuery cells are examined for content starting with '(:<:)' The first such cell, if any, found searching towards the first cell is prefixed to the current cell before execution.
-If no `declare base-uri` is present in the header then the notebook url is prepended to the code.
-
-## Notes
-
-The Jupyter notebook schema
-https://github.com/jupyter/nbformat/blob/f101cd2b062609823e9cdbf0e8de697a6c22638e/nbformat/v4/nbformat.v4.5.schema.json
+If no `declare base-uri` is present in the header then a `declare base-uri ..` statement with the file based notebook url is prepended to the code.

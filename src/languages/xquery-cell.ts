@@ -1,5 +1,5 @@
 import * as basex from '@quodatum/basex';
-
+import * as vscode from 'vscode';
 import { CellProvider } from './cellprovider';
 import { Configuration } from '../common';
 
@@ -15,7 +15,11 @@ export class XQueryCell implements CellProvider {
                     this.session = newSession();
                     this.connected = true;
                     this.session.on("socketError",
-                        (e: any) => { this.connected = false; reject(e); }
+                        (e: any) => { 
+                            this.connected = false;
+                            vscode.window.showInformationMessage("BaseX socket error."); 
+                            reject(e);
+                        }
                     );
                 }
                 if (!this.session) reject("no sess");

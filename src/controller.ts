@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as cellprovider from './languages/cellprovider';
-import { findHeader } from './common';
+import { findHeader,getHeader } from './common';
 
 function output(execution: vscode.NotebookCellExecution, items: any[]) {
     execution.replaceOutput([new vscode.NotebookCellOutput(items)]);
@@ -40,13 +40,17 @@ export class XQueryKernel {
         const execution = this._controller.createNotebookCellExecution(cell);
         const lang = cell.document.languageId;
         const provider = cellprovider.getProvider(lang);
-
+        let result: string[]; 
         execution.executionOrder = ++this._executionOrder;
         execution.start(Date.now());
 
         try {
             const code = getCode(cell);
-            const result: string[] = await provider.eval(code);
+            if(getHeader(cell)){
+                result=["This is XQuery header cell. It will be prefixed to following XQuery cells.",code];
+            }else{
+                result = await provider.eval(code);
+            }
             // eslint-disable-next-line prefer-const
             let text = asHtml(result);
             /*  result.forEach(element => { text+=element; }); */
@@ -61,8 +65,6 @@ export class XQueryKernel {
             execution.end(false, Date.now());
         }
     }
-
-
 }
 
 function getCode(cell: vscode.NotebookCell): string {

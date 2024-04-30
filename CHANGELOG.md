@@ -1,3 +1,5 @@
+# 0.1.4 (2024-04-30)
+* fix header cell detection #5
 # 0.1.3 (2024-02-10)
 * change status text order
 * improve base-uri handling
