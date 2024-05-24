@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as cellprovider from './languages/cellprovider';
 import { findHeader,getHeader } from './common';
-
+import { EvalResult } from './languages/xquery-cell';
 function output(execution: vscode.NotebookCellExecution, items: any[]) {
     execution.replaceOutput([new vscode.NotebookCellOutput(items)]);
 }
@@ -46,18 +46,24 @@ export class XQueryKernel {
 
         try {
             const code = getCode(cell);
+            let result:EvalResult;
             if(getHeader(cell)){
-                result=["This is XQuery header cell. It will be prefixed to following XQuery cells.",code];
+                 result={
+                    serialization:"system",
+                    result:["This is XQuery header cell. It will be prefixed to following XQuery cells.",code]
+                };
             }else{
                 result = await provider.eval(code);
             }
             // eslint-disable-next-line prefer-const
-            let text = asHtml(result);
+            let text = asHtml(result.result);
             /*  result.forEach(element => { text+=element; }); */
-            output(execution, [
-                vscode.NotebookCellOutputItem.json(result)
-                , vscode.NotebookCellOutputItem.text(text, 'text/html')
-            ]);
+            const outs=[];
+            outs.push(vscode.NotebookCellOutputItem.text(result.result[0],"image/svg+xml"));
+            outs.push(vscode.NotebookCellOutputItem.text(result.result[0],"text/x-xml"));
+            outs.push(vscode.NotebookCellOutputItem.text(text,"text/html"));
+            outs.push(vscode.NotebookCellOutputItem.json(result.result));
+            output(execution, outs);
 
             execution.end(true, Date.now());
         } catch (err: any) {

@@ -1,7 +1,7 @@
 {
   "name": "quobook",
   "displayName": "Quodatum: XQuery notebooks for BaseX",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Notebook supporting XQuery cells. The XQuery cells are evaluated via a socket connection to a BaseX server.",
   "preview": true,
   "publisher": "quodatum",
