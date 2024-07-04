@@ -1,3 +1,6 @@
+# 0.1.5 (2024-05-30)
+* notebook icon
+* experiemental xml and svg output rendering
 # 0.1.4 (2024-04-30)
 * fix header cell detection #5
 # 0.1.3 (2024-02-10)

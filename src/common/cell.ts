@@ -1,5 +1,5 @@
 
-import { NotebookCell, NotebookCellKind } from 'vscode';
+import { NotebookCell, NotebookCellKind, Position } from 'vscode';
 
 //   1st previous XQuery cell before with special marker
 export function findHeader(cell: NotebookCell): string | undefined {
