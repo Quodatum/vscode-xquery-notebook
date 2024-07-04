@@ -6,12 +6,17 @@ export type EvalResult={
     serialization: string;
     result: string[]
 }
+export type EvalResult={
+    serialization: string;
+    result: string[]
+}
 export class XQueryCell implements CellProvider {
     private connected = false;
     private session: basex.Session | undefined;
    
     async eval(code: string): Promise<any> {
         return new Promise((resolve, reject) => {
+            let query :basex.Query | undefined;
             let query :basex.Query | undefined;
             try {
                 if (!this.connected) {
@@ -45,6 +50,8 @@ export class XQueryCell implements CellProvider {
 
             } catch (err) {
                 reject(err);
+            } finally {
+               // query?.close();
             } finally {
                // query?.close();
             }
