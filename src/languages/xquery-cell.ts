@@ -27,15 +27,16 @@ export class XQueryCell implements CellProvider {
                 }
                 if (!this.session) reject("no sess");
                 query = this.session?.query(code);
-                query?.options(function (err: any, reply: any){
-                    if (err) reject(err);
-                    const serialization=reply.result;
-                   
+                    
                     query?.results(function (err: any, reply: any) {
-                        if (err) reject(err);
+                        if (err) return reject(err);
+                        const result=reply.result;
+                        query?.options(function (err: any, reply: any){
+                            if (err) return reject(err);
+                        const serialization=reply.result;   
                         resolve({serialization:serialization,
-                                result: reply.result});
-                        vscode.window.showInformationMessage("serialization: "+serialization); 
+                                result: result});
+                        if(serialization) vscode.window.showInformationMessage("serialization: "+serialization); 
                         query?.close();       
                     });
                 });
@@ -57,3 +58,24 @@ function newSession(): basex.Session {
         Configuration.user, Configuration.password
     );
 }
+
+const qresult = (query: { results: (arg0: (err: any, data: any) => void) => void; }) => {
+    return new Promise((resolve, reject) => {
+        query.results((err, data) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
+        });
+    });
+};
+const qoptions = (query: { option: (arg0: (err: any, data: any) => void) => void; }) => {
+    return new Promise((resolve, reject) => {
+        query.option((err: any, data: unknown) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
+        });
+    });
+};

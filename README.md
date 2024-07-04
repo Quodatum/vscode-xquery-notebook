@@ -17,3 +17,6 @@ Adding a code cell defaults to type `xquery`. `Javascript` cells are also suppor
 ### Header cells
 Before executing a XQuery cell, preceding XQuery cells are examined for content starting with '(:<:)' The first such cell, if any, found searching towards the first cell is prefixed to the current cell before execution.
 If no `declare base-uri` is present in the header then a `declare base-uri ..` statement with the file based notebook url is prepended to the code.
+
+### mime-type
+
