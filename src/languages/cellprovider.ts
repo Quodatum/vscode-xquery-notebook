@@ -22,7 +22,7 @@ export function getProvider(lang: string): CellProvider {
                cell = new JavascriptCell();
                break;
           default:
-               cell = new XQueryCell();
+               throw "bad lang: "+lang;
      }
    
      Providers.set(lang, cell);

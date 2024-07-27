@@ -74,17 +74,17 @@ export class XQueryKernel {
 }
 
 function getCode(cell: vscode.NotebookCell): string {
-    const base = `declare base-uri "${cell.document.fileName}";`;
+   
     const cellText = cell.document.getText();
-    const header = findHeader(cell);
-    if (header) {
+    const isXq="xquery" ===cell.document.languageId;
+    const header = isXq?findHeader(cell):undefined;
+    if(header){
+        const base = `declare base-uri "${cell.document.fileName}";`;
         const hasBase = header.includes('declare base-uri ');
         return (hasBase ? "" : base) + header + cellText;
-    } else {
-        const hasBase = cellText.includes('declare base-uri ');
-        return (hasBase ? "" : base) + cellText; + cellText;
+    } else{
+        return cellText;
     }
-
 }
 
 function formatResult(item: string): string {

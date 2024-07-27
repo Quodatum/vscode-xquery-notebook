@@ -5,7 +5,8 @@ export class JavascriptCell implements CellProvider {
     async eval(code: string): Promise<any> {
         return new Promise((resolve, reject) => {
             try {
-                resolve(eval?.(`"use strict";(${code})`));
+                const result=eval?.(`"use strict";${code}`);
+                return resolve({"result":result});
             } catch (err :any) {
                 reject({'message': err.message});
             }

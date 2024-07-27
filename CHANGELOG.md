@@ -1,4 +1,6 @@
 # 0.1.6 (2024-07-03)
+* execution
+# 0.1.6 (2024-07-03)
 * fix error handling #4
 # 0.1.5 (2024-05-30)
 * notebook icon
