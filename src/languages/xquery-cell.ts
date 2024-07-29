@@ -37,7 +37,7 @@ export class XQueryCell implements CellProvider {
                         const serialization=reply.result;   
                         resolve({serialization:serialization,
                                 result: result});
-                        if(serialization) vscode.window.showInformationMessage("serialization: "+serialization); 
+                        
                         query?.close();       
                     });
                 });

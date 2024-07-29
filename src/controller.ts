@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
 import * as cellprovider from './languages/cellprovider';
-import { findHeader,getHeader } from './common';
+import { findHeader, getHeader } from './common';
 import { EvalResult } from './languages/xquery-cell';
 function output(execution: vscode.NotebookCellExecution, items: any[]) {
     execution.replaceOutput([new vscode.NotebookCellOutput(items)]);
 }
-
+// @todo
+const mimeTypes:string[]=[];
 
 export class XQueryKernel {
     private readonly _id = 'quobook-kernel';
@@ -40,49 +41,54 @@ export class XQueryKernel {
         const execution = this._controller.createNotebookCellExecution(cell);
         const lang = cell.document.languageId;
         const provider = cellprovider.getProvider(lang);
-        let result: string[]; 
+        let result: string[];
         execution.executionOrder = ++this._executionOrder;
         execution.start(Date.now());
 
         try {
             const code = getCode(cell);
-            let result:EvalResult;
-            if(getHeader(cell)){
-                 result={
-                    serialization:"system",
-                    result:["This is XQuery header cell. It will be prefixed to following XQuery cells.",code]
+            let result: EvalResult;
+            if (getHeader(cell)) {
+                result = {
+                    serialization: "system",
+                    result: ["This is XQuery header cell. It will be prefixed to following XQuery cells.", code]
                 };
-            }else{
+            } else {
                 result = await provider.eval(code);
             }
+            const mimeType=result.serialization.replace(/.*media-type=([+/a-z0-9]+).*/,"$1");
+            if (mimeType) vscode.window.showInformationMessage("mimeType: " + mimeType);
             // eslint-disable-next-line prefer-const
             let text = asHtml(result.result);
             /*  result.forEach(element => { text+=element; }); */
-            const outs=[];
-            outs.push(vscode.NotebookCellOutputItem.text(result.result[0],"image/svg+xml"));
-            outs.push(vscode.NotebookCellOutputItem.text(result.result[0],"text/x-xml"));
-            outs.push(vscode.NotebookCellOutputItem.text(text,"text/html"));
-            outs.push(vscode.NotebookCellOutputItem.json(result.result));
+            const outs = [
+                vscode.NotebookCellOutputItem.text(result.result[0], "image/svg+xml"),
+                vscode.NotebookCellOutputItem.text(result.result[0], "text/x-xml"),
+                vscode.NotebookCellOutputItem.text(text, "text/html"),
+                vscode.NotebookCellOutputItem.json(
+                    { "result": result }, 'application/quodatum-basex-renderer'),
+                vscode.NotebookCellOutputItem.json(result.result,"application/json")
+            ];
             output(execution, outs);
 
             execution.end(true, Date.now());
         } catch (err: any) {
-            output(execution, [vscode.NotebookCellOutputItem.json(err)]);
+            output(execution, [vscode.NotebookCellOutputItem.error(err)]);
             execution.end(false, Date.now());
         }
     }
 }
 
 function getCode(cell: vscode.NotebookCell): string {
-   
+
     const cellText = cell.document.getText();
-    const isXq="xquery" ===cell.document.languageId;
-    const header = isXq?findHeader(cell):undefined;
-    if(header){
+    const isXq = "xquery" === cell.document.languageId;
+    const header = isXq ? findHeader(cell) : undefined;
+    if (header) {
         const base = `declare base-uri "${cell.document.fileName}";`;
         const hasBase = header.includes('declare base-uri ');
         return (hasBase ? "" : base) + header + cellText;
-    } else{
+    } else {
         return cellText;
     }
 }
