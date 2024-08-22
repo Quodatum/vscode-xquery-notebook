@@ -6,7 +6,7 @@ function output(execution: vscode.NotebookCellExecution, items: any[]) {
     execution.replaceOutput([new vscode.NotebookCellOutput(items)]);
 }
 // @todo
-const mimeTypes:string[]=[];
+const mimeTypes: string[] = [];
 
 export class XQueryKernel {
     private readonly _id = 'quobook-kernel';
@@ -56,7 +56,7 @@ export class XQueryKernel {
             } else {
                 result = await provider.eval(code);
             }
-            const mimeType=result.serialization.replace(/.*media-type=([+/a-z0-9]+).*/,"$1");
+            const mimeType = result.serialization.replace(/.*media-type=([+/a-z0-9]+).*/, "$1");
             if (mimeType) vscode.window.showInformationMessage("mimeType: " + mimeType);
             // eslint-disable-next-line prefer-const
             let text = asHtml(result.result);
@@ -67,7 +67,7 @@ export class XQueryKernel {
                 vscode.NotebookCellOutputItem.text(text, "text/html"),
                 vscode.NotebookCellOutputItem.json(
                     { "result": result }, 'application/quodatum-basex-renderer'),
-                vscode.NotebookCellOutputItem.json(result.result,"application/json")
+                vscode.NotebookCellOutputItem.json(result.result, "application/json")
             ];
             output(execution, outs);
 
@@ -79,17 +79,17 @@ export class XQueryKernel {
     }
 }
 
+// cell with header (if found) and file based uri (if found and unset)
 function getCode(cell: vscode.NotebookCell): string {
-
     const cellText = cell.document.getText();
-    const isXq = "xquery" === cell.document.languageId;
-    const header = isXq ? findHeader(cell) : undefined;
-    if (header) {
-        const base = `declare base-uri "${cell.document.fileName}";`;
-        const hasBase = header.includes('declare base-uri ');
-        return (hasBase ? "" : base) + header + cellText;
+    const header = findHeader(cell);
+    const code = (header ? header : "") + cellText;
+    const hasBase = code.includes('declare base-uri ');
+    if (hasBase || !cell.document.fileName) {
+        return code;
     } else {
-        return cellText;
+        const base = `declare base-uri "${cell.document.fileName}";`;
+        return base + code;
     }
 }
 
