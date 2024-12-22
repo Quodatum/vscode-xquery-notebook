@@ -1,5 +1,7 @@
 # 0.1.9 (2024-08-22)
 * improve static-base-uri handling
+* improve execution error reporting
+* use rEX 6.0
 # 0.1.8 (2024-07-29)
 * execution fixes
 # 0.1.6 (2024-07-03)

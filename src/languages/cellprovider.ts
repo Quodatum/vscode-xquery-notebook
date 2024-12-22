@@ -1,10 +1,14 @@
 
 import { XQueryCell } from './xquery-cell';
 import { JavascriptCell } from './javascript-cell';
+import { NotebookCell } from 'vscode';
 
 export interface CellProvider {
      eval(code: string): Promise<any>;
+     getCode(cell:NotebookCell):string;
+     mimeType:string | undefined;
 }
+
 const Providers: Map<string, CellProvider | null> = new Map([
      ["xquery", null],
      ["javascript", null]

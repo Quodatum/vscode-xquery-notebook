@@ -2,7 +2,8 @@ import * as basex from '@quodatum/basex';
 import * as vscode from 'vscode';
 import { CellProvider } from './cellprovider';
 import { Configuration } from '../common';
-export type EvalResult={
+import { NotebookCell, NotebookCellKind} from 'vscode';
+export type EvalResult = {
     serialization: string;
     result: string[]
 }
@@ -10,46 +11,62 @@ export type EvalResult={
 export class XQueryCell implements CellProvider {
     private connected = false;
     private session: basex.Session | undefined;
-   
+    public mimeType: string | undefined;
     async eval(code: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            let query :basex.Query | undefined;
+            let query: basex.Query | undefined;
             try {
                 if (!this.connected) {
                     this.session = newSession();
                     this.connected = true;
                     this.session.on("socketError",
-                        (e: any) => { 
+                        (e: any) => {
                             this.connected = false;
-                            vscode.window.showInformationMessage("BaseX socket error."); 
-                            reject(e);
+                            const msg = e.errors[0];
+                            vscode.window.showInformationMessage("BaseX socket error: " + msg);
+                            reject({ message: msg });
                         }
                     );
                 }
                 if (!this.session) reject("no sess");
                 query = this.session?.query(code);
-                    
-                    query?.results(function (err: any, reply: any) {
+
+                query?.results(function (err: any, reply: any) {
+                    if (err) return reject(err);
+                    const result = reply.result;
+                    query?.options(function (err: any, reply: any) {
                         if (err) return reject(err);
-                        const result=reply.result;
-                        query?.options(function (err: any, reply: any){
-                            if (err) return reject(err);
-                        const serialization=reply.result;   
-                        resolve({serialization:serialization,
-                                result: result});
-                        
-                        query?.close();       
+                        const serialization = reply.result;
+                       
+                        resolve({
+                            serialization: serialization,
+                            result: result
+                        });
+
+                        query?.close();
                     });
                 });
-                
-                 
+
+
 
             } catch (err) {
                 reject(err);
             } finally {
-               // query?.close();
+                // query?.close();
             }
         });
+    }
+    getCode(cell: vscode.NotebookCell): string {
+        const cellText = cell.document.getText();
+        const header = findHeader(cell);
+        const code = (header ? header : "") + cellText;
+        const hasBase = code.includes('declare base-uri ');
+        if (hasBase || !cell.document.fileName) {
+            return code;
+        } else {
+            const base = `declare base-uri "${cell.document.fileName}";`;
+            return base + code;
+        }
     }
 }
 
@@ -80,3 +97,21 @@ const qoptions = (query: { option: (arg0: (err: any, data: any) => void) => void
         });
     });
 };
+//   1st previous XQuery cell before with special marker
+export function findHeader(cell: NotebookCell): string | undefined {
+    let ci = cell.index;
+    let header: string | undefined;
+    while (ci>0) {
+        const c = cell.notebook.cellAt(--ci);
+        header = getHeader(c);
+        if (header) return header;
+    }
+}
+// text of cell if "header" else undefined 
+export function getHeader(cell: NotebookCell): string | undefined {
+    if (NotebookCellKind.Code === cell.kind
+        && "xquery" === cell.document.languageId) {
+        const line = cell.document.lineAt(0).text;
+        if (line.startsWith("(:<:)")) return cell.document.getText();
+    }
+}
