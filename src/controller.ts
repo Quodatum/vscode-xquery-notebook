@@ -8,13 +8,7 @@ function output(execution: vscode.NotebookCellExecution, items: any[]) {
 }
 // @todo
 const mimeTypes: string[] = [];
-class BasexError extends Error {
-    constructor(message: string) {
-        super(message); // (1)
-        this.name = "BasexError"; // (2)
-        //this.stack="~";
-    }
-}
+
 export class XQueryKernel {
     private readonly _id = 'quobook-kernel';
     private readonly _label = 'quobook Kernel';
@@ -32,6 +26,8 @@ export class XQueryKernel {
         this._controller.supportedLanguages = this._supportedLanguages;
         this._controller.supportsExecutionOrder = true;
         this._controller.executeHandler = this._executeAll.bind(this);
+
+
     }
 
     dispose(): void {
@@ -47,6 +43,12 @@ export class XQueryKernel {
     private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
         const execution = this._controller.createNotebookCellExecution(cell);
         const lang = cell.document.languageId;
+        // Setup cancellation handling
+        execution.token.onCancellationRequested(() => {
+            this._cleanup(execution);
+            execution.end(false, Date.now());
+        });
+
         const provider = cellprovider.getProvider(lang);
         let result: string[];
         execution.executionOrder = ++this._executionOrder;
@@ -55,7 +57,8 @@ export class XQueryKernel {
         try {
             const code = provider.getCode(cell);
             const result: EvalResult = await provider.eval(code);
-
+            if(execution.token.isCancellationRequested) return; 
+            
             const mimeType = result.serialization?.replace(/.*media-type=([+/a-z0-9]+).*/, "$1");
             if (mimeType) vscode.window.showInformationMessage("mimeType: " + mimeType);
             // eslint-disable-next-line prefer-const
@@ -82,9 +85,12 @@ export class XQueryKernel {
 
             execution.end(true, Date.now());
         } catch (err: any) {
-            output(execution, [vscode.NotebookCellOutputItem.error(err.message)]);
+            output(execution, [vscode.NotebookCellOutputItem.error(err)]);
             execution.end(false, Date.now());
         }
+    }
+    private _cleanup(execution: vscode.NotebookCellExecution): void {
+        vscode.window.showInformationMessage("Execution cancelled");
     }
 }
 
@@ -105,4 +111,17 @@ function asHtml(result: string[]): string {
     result.forEach(r => { text += formatResult(r); });
     text += "</div>";
     return text;
+}
+
+import { XQueryContentSerializer } from './serializer';
+
+export function activate(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.registerNotebookSerializer('xquery-notebook', new XQueryContentSerializer()),
+        vscode.notebooks.createNotebookController(
+            'xquery-kernel',
+            'xquery-notebook',
+            'XQuery Kernel'
+        )
+    );
 }
