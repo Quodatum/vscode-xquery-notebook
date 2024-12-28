@@ -32,10 +32,10 @@ export class XQueryCell implements CellProvider {
                 query = this.session?.query(code);
 
                 query?.results(function (err: any, reply: any) {
-                    if (err) return reject(err);
+                    if (err) return reject({ message: err});
                     const result = reply.result;
                     query?.options(function (err: any, reply: any) {
-                        if (err) return reject(err);
+                        if (err) return reject({ message: err});
                         const serialization = reply.result;
                        
                         resolve({

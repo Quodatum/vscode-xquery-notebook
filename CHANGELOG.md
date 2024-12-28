@@ -1,5 +1,7 @@
+# 0.1.11 2024-12-23
+* fix: display of Xquery execution errors
 # 0.1.10 2024-12-23
-* feature: cancelation of execution
+* feature: cancel execution support
 # 0.1.9 (2024-08-22)
 * improve static-base-uri handling
 * improve execution error reporting
